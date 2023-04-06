@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:animateLayoutChanges="true"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="@dimen/dp_15"
+        android:id="@+id/cardview"
+        android:animateLayoutChanges="true"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:cardCornerRadius="10dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
+        android:layout_height="270dp"
+        >
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+
+            <WebView
+                android:id="@+id/webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+            <ProgressBar
+                android:id="@+id/progressbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="0"
+                android:indeterminateTint="#1BC3F4"
+                android:layout_gravity="center"
+                android:progressTint="#1BC3F4"
+                />
+
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_cancel"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_baseline_cancel_24"
+        android:elevation="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_12"
+        android:layout_alignEnd="@+id/cardview"
+        />
+
+</RelativeLayout>
+
