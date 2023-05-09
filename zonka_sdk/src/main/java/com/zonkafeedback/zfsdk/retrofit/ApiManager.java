@@ -120,6 +120,10 @@ public class ApiManager {
         return contactTrackingHostClient.hitCreateContactApi(hashMap);
     }
 
+    public Call<ContactResponse> hitCreateContactApiDynamic(HashMap<String, Object> hashMap) {
+        return contactTrackingHostClient.hitCreateContactApiDynamic(hashMap);
+    }
+
     public Call<ResponseBody> sendEventToServer(EventRequest request) {
         return apiServerHostClient.sendEventToServer(request);
     }

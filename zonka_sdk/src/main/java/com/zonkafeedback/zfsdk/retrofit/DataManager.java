@@ -168,6 +168,80 @@ public class DataManager {
         });
     }
 
+    public void createContactForDynamicAttribute(HashMap<String, Object> hashMapData, Application mContext, String token, boolean isContactCreated) {
+
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put(Constant.COOKIE_ID, getCookieId());
+        hashMap.put(Constant.FIRST_SEEN, getFirstSeen());
+        hashMap.put(Constant.REQUEST_TYPE, Constant.ANDROID);
+        hashMap.put(Constant.LAST_SEEN, AppUtils.getInstance().getCurrentTime(Calendar.getInstance().getTimeInMillis(), Constant.DATE_FORMAT));
+        hashMap.put(Constant.IP_ADDRESS, AppUtils.getInstance().getLocalIpAddress());
+
+        if (!TextUtils.isEmpty(getContactId())) {
+            hashMap.put(Constant.CONTACT_ID, getContactId());
+        } else {
+            if (!TextUtils.isEmpty(getExternalVisitorId())) {
+                hashMap.put(Constant.EXTERNAL_VISITOR_ID, getExternalVisitorId());
+            }
+        }
+        if (!TextUtils.isEmpty(getEmailId())) {
+            hashMap.put(Constant.EMAIL_ID, getEmailId());
+        }
+        if (!TextUtils.isEmpty(getContactName())) {
+            hashMap.put(Constant.CONTACT_NAME, getContactName());
+        }
+
+        if (!TextUtils.isEmpty(getMobileNo())) {
+            hashMap.put(Constant.MOBILE_NO, getMobileNo());
+        }
+
+        if (!TextUtils.isEmpty(getUniqueId())) {
+            hashMap.put(Constant.UNIQUE_ID, getUniqueId());
+        }
+
+        hashMap.put(Constant.UNIQUE_REF_CODE, token);
+        hashMap.put(Constant.JOB_TYPE, "sdktd");
+        hashMap.put(Constant.COMPANY_ID, DataManager.getInstance().getCompanyID());
+        hashMap.put(Constant.CONTACT_DEVICE_OS, Constant.ANDROID);
+        hashMap.put(Constant.CONTACT_DEVICE_NAME, Build.MODEL);
+        hashMap.put(Constant.CONTACT_DEVICE_MODEL, Build.MODEL);
+        hashMap.put(Constant.CONTACT_DEVICE_BRAND, Build.BRAND);
+        hashMap.put(Constant.CONTACT_DEVICE_OS_VERSION, Build.VERSION.RELEASE);
+        hashMap.put(Constant.CONTACT_DEVICE, AppUtils.getInstance().isTablet(mContext) ? "Tablet" : "Mobile");
+
+        hashMapData.putAll(hashMap);
+        apiManager.hitCreateContactApiDynamic(hashMapData).enqueue(new NetworkCallback<ContactResponse>() {
+            @Override
+            public void onSuccess(ContactResponse contactResponse) {
+                if (contactResponse != null && contactResponse.getData() != null) {
+
+                    if (contactResponse.getData().getContactInfo() != null) {
+                        if (!TextUtils.isEmpty(contactResponse.getData().getContactInfo().getId())) {
+                            saveContactId(contactResponse.getData().getContactInfo().getId());
+                            callbacks.onContactCreationSuccess(isContactCreated);
+                        }
+                    } else if (contactResponse.getData().getEvd() != null) {
+                        if (!TextUtils.isEmpty(contactResponse.getData().getEvd().getId())) {
+                            saveExternalVisitorId(contactResponse.getData().getEvd().getId());
+                            callbacks.onContactCreationSuccess(isContactCreated);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(FailureResponse failureResponse) {
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+        });
+    }
+
+
     /**
      * This function sends the event to the server when actions are performed by user
      * such as dismiss Event.

@@ -32,6 +32,8 @@ public interface ApiInterface {
     @POST("contacts/tracking")
     Call<ContactResponse> hitCreateContactApi(@Body HashMap<String, String> hashMap);
 
+    @POST("contacts/tracking")
+    Call<ContactResponse> hitCreateContactApiDynamic(@Body HashMap<String, Object> hashMap);
 
     @POST("contacts/sessionsUpdate/{token}")
     Call<SessionResponse> hitSessionUpdateAPi(@Path("token") String token, @Body UpdateSessionRequest sessionRequest);

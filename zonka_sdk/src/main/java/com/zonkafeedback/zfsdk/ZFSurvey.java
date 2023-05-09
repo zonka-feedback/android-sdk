@@ -260,7 +260,7 @@ public final class ZFSurvey implements ApiResponseCallbacks {
                 }
             }
         }
-        DataManager.getInstance().createContact(mContext, survey.getSurveyToken(), true);
+        DataManager.getInstance().createContactForDynamicAttribute(hashMap, mContext, survey.getSurveyToken(), true);
         return this;
     }
 
