@@ -26,6 +26,7 @@ public class Constant {
     public static final String DEVICE_OS_VERSION = "zf_sdk_os_version";
     public static final String APP_VERSION_NAME = "zf_sdk_version";
     public static final String DEVICE_OS = "zf_sdk_os";
+    public static  final String SCREEN_NAME = "zf_sdk_screen";
     public static final String IS_WIDGET_ACTIVE = "setIsWidgetActive";
 
     public static final String COMPANY_ID = "companyId";

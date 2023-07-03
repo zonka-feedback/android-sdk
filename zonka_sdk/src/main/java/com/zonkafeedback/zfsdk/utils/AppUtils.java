@@ -1,6 +1,7 @@
 package com.zonkafeedback.zfsdk.utils;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -28,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -202,6 +204,7 @@ public class AppUtils {
         hashMap.put(Constant.DEVICE_OS, Constant.ANDROID);
         hashMap.put(Constant.APP_VERSION_NAME, "1.0");
         hashMap.put(Constant.DEVICE_OS_VERSION, Build.VERSION.RELEASE);
+        hashMap.put(Constant.SCREEN_NAME, AppUtils.getInstance().getScreenName(mContext));
         return hashMap;
     }
 
@@ -290,6 +293,21 @@ public class AppUtils {
             sb.append(AlphaNumericString.charAt(index));
         }
         return sb.toString();
+    }
+
+    public String getScreenName(Context mContext) {
+        ActivityManager result = (ActivityManager)mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> services = result.getRunningTasks(Integer.MAX_VALUE);
+
+        String screenName = "";
+        try {
+            screenName = services.get(0).topActivity.toString();
+            screenName = screenName.substring(screenName.lastIndexOf('.') + 1).trim();
+            screenName = screenName.replace("}","");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return screenName;
     }
 
 }

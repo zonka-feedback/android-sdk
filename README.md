@@ -46,7 +46,7 @@ Add it to your **root**  `build.gradle` at the end of repositories:
 
 Add the following line to your **app module**  `build.gradle` file dependencies
 
-    implementation 'com.github.zonka-feedback:android-sdk:v1.0.1'
+    implementation 'com.github.zonka-feedback:android-sdk:v1.0.2'
 
 #### Setup
 
