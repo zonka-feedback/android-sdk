@@ -3,6 +3,10 @@ package com.zonkafeedback.zfsdk.sharedpreference;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * This Class used to create and save the user information in Shared Preference.
@@ -70,6 +74,18 @@ public class PreferenceManager {
     public boolean getBoolean(String key, boolean defaultValue) {
         return sharedPref.getBoolean(key, defaultValue);
     }
+    public void putStringList(String key, List<String> value) {
+        Set<String> set = new HashSet<String>();
+        set.addAll(value);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putStringSet(key, set);         // Commit the edits!
+        editor.apply();
+    }
+
+    public Set<String> getStringList(String key, Set<String> defaultValue) {
+        return  sharedPref.getStringSet(key, defaultValue);
+    }
+
 
     public void clearAllPrefs() {
         SharedPreferences.Editor editor = sharedPref.edit();
