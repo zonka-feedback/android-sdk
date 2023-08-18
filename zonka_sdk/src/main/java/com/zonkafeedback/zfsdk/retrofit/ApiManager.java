@@ -6,8 +6,10 @@ import android.util.Log;
 import com.zonkafeedback.zfsdk.Constant;
 import com.zonkafeedback.zfsdk.model.contactResponse.ContactResponse;
 import com.zonkafeedback.zfsdk.model.eventModel.EventRequest;
+import com.zonkafeedback.zfsdk.model.segmentRequest.SegmentRequest;
 import com.zonkafeedback.zfsdk.model.sessionRequestModel.UpdateSessionRequest;
 import com.zonkafeedback.zfsdk.model.sessionResponseModel.SessionResponse;
+import com.zonkafeedback.zfsdk.model.trackingRequestModel.TrackingRequest;
 import com.zonkafeedback.zfsdk.model.widgetResponse.Widget;
 
 import java.util.HashMap;
@@ -131,5 +133,13 @@ public class ApiManager {
     public Call<SessionResponse> updateSessionToServer(String token, UpdateSessionRequest sessionRequest) {
         return apiServerHostClient.hitSessionUpdateAPi(token, sessionRequest);
     }
+
+   /* public Call<TrackingRequest> trackingRequest(){
+        return apiServerHostClient.hitTrackingRequest();
+    }
+
+    public Call<SegmentRequest> segmentRequest(){
+        return apiServerHostClient.hitSegmentRequest();
+    }*/
 
 }

@@ -1,9 +1,8 @@
-package com.zonkafeedback.zfsdk.model.widgetResponse;
 
+package com.zonkafeedback.zfsdk.model.widgetResponse;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.zonkafeedback.zfsdk.model.widgetResponse.Data;
 
 public class Widget {
 
@@ -13,6 +12,10 @@ public class Widget {
     @SerializedName("success")
     @Expose
     private Boolean success;
+
+    public Widget() {
+    }
+
     @SerializedName("message")
     @Expose
     private String message;

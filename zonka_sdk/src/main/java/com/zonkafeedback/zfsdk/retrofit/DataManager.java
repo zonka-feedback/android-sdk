@@ -4,20 +4,29 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
+
 import com.zonkafeedback.zfsdk.Constant;
 import com.zonkafeedback.zfsdk.database.Sessions;
 import com.zonkafeedback.zfsdk.interfaces.ApiResponseCallbacks;
 import com.zonkafeedback.zfsdk.model.contactResponse.ContactResponse;
 import com.zonkafeedback.zfsdk.model.eventModel.EventRequest;
+import com.zonkafeedback.zfsdk.model.segmentRequest.SegmentRequest;
 import com.zonkafeedback.zfsdk.model.sessionRequestModel.SessionLog;
 import com.zonkafeedback.zfsdk.model.sessionRequestModel.UpdateSessionRequest;
 import com.zonkafeedback.zfsdk.model.sessionResponseModel.SessionResponse;
+import com.zonkafeedback.zfsdk.model.trackingRequestModel.TrackingRequest;
+import com.zonkafeedback.zfsdk.model.widgetResponse.ExcludeSegment;
+import com.zonkafeedback.zfsdk.model.widgetResponse.IncludeSegment;
 import com.zonkafeedback.zfsdk.model.widgetResponse.Widget;
 import com.zonkafeedback.zfsdk.sharedpreference.PreferenceManager;
 import com.zonkafeedback.zfsdk.utils.AppUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import okhttp3.ResponseBody;
 
 /**
@@ -74,17 +83,34 @@ public class DataManager {
         apiManager.hitSurveyActiveApi(token).enqueue(new NetworkCallback<Widget>() {
             @Override
             public void onSuccess(Widget widget) {
+                if(widget.getData().getDistributionInfo().getEmbedSettings()!=null) {
+                    ExcludeSegment excludeSegment = widget.getData().getDistributionInfo().getEmbedSettings().getExcludeSegment();
+                    IncludeSegment includeSegment = widget.getData().getDistributionInfo().getEmbedSettings().getIncludeSegment();
+
+                    if (widget.getData().getDistributionInfo().getEmbedSettings().getExcludeSegment().getList().size() > 0) {
+                        saveExcludedList(widget.getData().getDistributionInfo().getEmbedSettings().getExcludeSegment().getList());
+                        saveExcludeType(widget.getData().getDistributionInfo().getEmbedSettings().getExcludeSegment().getType());
+                    } else if (widget.getData().getDistributionInfo().getEmbedSettings().getIncludeSegment().getList().size() > 0) {
+                        saveIncludedList(widget.getData().getDistributionInfo().getEmbedSettings().getIncludeSegment().getList());
+                        saveIncludeType(widget.getData().getDistributionInfo().getEmbedSettings().getIncludeSegment().getType());
+                    } else {
+                        saveExcludedList(widget.getData().getDistributionInfo().getEmbedSettings().getExcludeSegment().getList());
+                        saveIncludedList(widget.getData().getDistributionInfo().getEmbedSettings().getIncludeSegment().getList());
+                    }
+                }
+
                 callbacks.onWidgetSuccess(widget, isSurveyInitialize);
             }
 
             @Override
             public void onFailure(FailureResponse failureResponse) {
+                Log.d("Fail",failureResponse.getErrorMessage().toString());
 
             }
 
             @Override
             public void onError(Throwable t) {
-
+                Log.d("Fail",t.getMessage().toString());
             }
         });
 
@@ -144,11 +170,17 @@ public class DataManager {
 
                     if (contactResponse.getData().getContactInfo() != null) {
                         if (!TextUtils.isEmpty(contactResponse.getData().getContactInfo().getId())) {
+                            if(contactResponse.getData().getContactInfo().getLists()!=null) {
+                                saveContactList(contactResponse.getData().getContactInfo().getLists());
+                            }
                             saveContactId(contactResponse.getData().getContactInfo().getId());
                             callbacks.onContactCreationSuccess(isContactCreated);
                         }
                     } else if (contactResponse.getData().getEvd() != null) {
                         if (!TextUtils.isEmpty(contactResponse.getData().getEvd().getId())) {
+                            if(contactResponse.getData().getEvd().getLists()!=null) {
+                                saveEvdList(contactResponse.getData().getEvd().getLists());
+                            }
                             saveExternalVisitorId(contactResponse.getData().getEvd().getId());
                             callbacks.onContactCreationSuccess(isContactCreated);
                         }
@@ -167,7 +199,6 @@ public class DataManager {
             }
         });
     }
-
     public void createContactForDynamicAttribute(HashMap<String, Object> hashMapData, Application mContext, String token, boolean isContactCreated) {
 
         HashMap<String, String> hashMap = new HashMap<>();
@@ -217,11 +248,18 @@ public class DataManager {
 
                     if (contactResponse.getData().getContactInfo() != null) {
                         if (!TextUtils.isEmpty(contactResponse.getData().getContactInfo().getId())) {
+                            if(contactResponse.getData().getContactInfo().getLists()!=null) {
+                                saveContactList(contactResponse.getData().getContactInfo().getLists());
+                            }
+                            //saveContactList(contactResponse.getData().getContactInfo().getLists());
                             saveContactId(contactResponse.getData().getContactInfo().getId());
                             callbacks.onContactCreationSuccess(isContactCreated);
                         }
                     } else if (contactResponse.getData().getEvd() != null) {
                         if (!TextUtils.isEmpty(contactResponse.getData().getEvd().getId())) {
+                            if(contactResponse.getData().getEvd().getLists()!=null) {
+                                saveEvdList(contactResponse.getData().getEvd().getLists());
+                            }
                             saveExternalVisitorId(contactResponse.getData().getEvd().getId());
                             callbacks.onContactCreationSuccess(isContactCreated);
                         }
@@ -335,6 +373,61 @@ public class DataManager {
         });
     }
 
+/*    public void getTrackingDetails(List<String> includedSegmentList, List<String> excludedSegmentList){
+
+        apiManager.trackingRequest().enqueue(new NetworkCallback<TrackingRequest>() {
+            @Override
+            public void onSuccess(TrackingRequest trackingRequest) {
+                if(trackingRequest != null && trackingRequest.getDynamicList() != null){
+
+                    List<String> dynamicList = trackingRequest.getDynamicList();
+                    if(!includedSegmentList.isEmpty()){
+
+                    }
+                    else if(!excludedSegmentList.isEmpty()){
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(FailureResponse failureResponse) {
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+        });
+    }
+
+    public void getSegmentDetails(List<String> included){
+
+        apiManager.segmentRequest().enqueue(new NetworkCallback<SegmentRequest>() {
+            @Override
+            public void onSuccess(SegmentRequest segmentRequest) {
+                if(segmentRequest != null && segmentRequest.getDynamicList() != null){
+                    List<String> includedSegmentList = segmentRequest.getIncludedSegment();
+                    List<String> excludedSegmentList = segmentRequest.getExcludedSegment();
+                    getTrackingDetails(includedSegmentList, excludedSegmentList);
+
+                }
+            }
+
+            @Override
+            public void onFailure(FailureResponse failureResponse) {
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+        });
+    }*/
+
 
     public void setSessionEndTime(long sessionEndTime) {
         PreferenceManager.getInstance().putLong(Constant.SESSION_END_TIME, sessionEndTime);
@@ -447,6 +540,53 @@ public class DataManager {
         return PreferenceManager.getInstance().getString(Constant.CONTACT_NAME, "");
     }
 
+    private void saveContactList(List<String> lists) {
+        PreferenceManager.getInstance().putStringList(Constant.CONTACT_LIST, lists);
+    }
+
+    public Set<String> getContactList(){
+        return PreferenceManager.getInstance().getStringList(Constant.CONTACT_LIST,null);
+    }
+
+    private void saveExcludedList(List<String> lists) {
+        PreferenceManager.getInstance().putStringList(Constant.EXCLUDED_LIST, lists);
+    }
+
+    public Set<String> getExcludedList(){
+        return PreferenceManager.getInstance().getStringList(Constant.EXCLUDED_LIST,null);
+    }
+
+    private void saveIncludedList(List<String> lists) {
+        PreferenceManager.getInstance().putStringList(Constant.INCLUDED_LIST, lists);
+    }
+
+    public Set<String> getIncludedList(){
+        return PreferenceManager.getInstance().getStringList(Constant.INCLUDED_LIST,null);
+    }
+
+    private void saveExcludeType(String type){
+        PreferenceManager.getInstance().putString(Constant.EXCLUDE_TYPE, type);
+    }
+
+    private void saveIncludeType(String type){
+        PreferenceManager.getInstance().putString(Constant.INCLUDE_TYPE, type);
+    }
+
+    public String getExcludeType(){
+        return PreferenceManager.getInstance().getString(Constant.EXCLUDE_TYPE,null);
+    }
+
+    public String getIncludeType(){
+        return PreferenceManager.getInstance().getString(Constant.INCLUDE_TYPE,null);
+    }
+
+    private void saveEvdList(List<String> lists) {
+        PreferenceManager.getInstance().putStringList(Constant.EVD_LIST, lists);
+    }
+
+    public Set<String> getEvdList(){
+        return PreferenceManager.getInstance().getStringList(Constant.EVD_LIST,null);
+    }
 
     public void clearPreference(){
         if(!TextUtils.isEmpty(getRegion())){

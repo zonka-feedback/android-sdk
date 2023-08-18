@@ -7,13 +7,18 @@ import android.util.Log;
 
 import com.zonkafeedback.zfsdk.database.SessionCallbacks;
 import com.zonkafeedback.zfsdk.interfaces.ApiResponseCallbacks;
+import com.zonkafeedback.zfsdk.model.contactResponse.ContactResponse;
+import com.zonkafeedback.zfsdk.model.widgetResponse.Data;
+import com.zonkafeedback.zfsdk.model.widgetResponse.EmbedSettings;
 import com.zonkafeedback.zfsdk.model.widgetResponse.Widget;
 import com.zonkafeedback.zfsdk.retrofit.DataManager;
 import com.zonkafeedback.zfsdk.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -29,6 +34,7 @@ public final class ZFSurvey implements ApiResponseCallbacks {
     private String url = "";
     private SessionCallbacks sessionCallbacks;
     private ZFSurveyDialog zfSurveyDialog;
+    private boolean processEmbedSurvey = true;
 
 
     public static void init(Application context, String token, String zfRegion) {
@@ -182,18 +188,114 @@ public final class ZFSurvey implements ApiResponseCallbacks {
             }
 
             if (DataManager.getInstance().isWidgetActive()) {
-                zfSurveyDialog = new ZFSurveyDialog(context, url, () -> {
-                    if (AppUtils.getInstance().isNetworkConnected(mContext)) {
-                    }
-                    if (zfSurveyDialog != null) {
-                        zfSurveyDialog = null;
-                    }
-                });
-                zfSurveyDialog.show();
+                boolean segmentAllowed = checkSegmenting();
+                if (segmentAllowed) {
+                    zfSurveyDialog = new ZFSurveyDialog(context, url, () -> {
+                        if (AppUtils.getInstance().isNetworkConnected(mContext)) {
+                        }
+                        if (zfSurveyDialog != null) {
+                            zfSurveyDialog = null;
+                        }
+                    });
+                    zfSurveyDialog.show();
+                }
             }
         }
     }
 
+    private boolean checkSegmenting() {
+
+        Set<String> includedListSet = DataManager.getInstance().getIncludedList();
+        ArrayList<String> includedList = new ArrayList<>();
+        if(includedListSet!=null) {
+            includedList.addAll(includedListSet);
+            /*Clear the data of the list so that when API call is being made the next time,
+            the data does not get added on in the previous list.*/
+            DataManager.getInstance().getIncludedList().clear();
+        }
+
+
+        Set<String> excludedListSet = DataManager.getInstance().getExcludedList();
+        ArrayList<String> excludedList = new ArrayList<>();
+        if(excludedListSet!=null) {
+            excludedList.addAll(excludedListSet);
+            /*Clear the data of the list so that when API call is being made the next time,
+            the data does not get added on in the previous list.*/
+            DataManager.getInstance().getExcludedList().clear();
+        }
+
+        Set<String> contactListSet = DataManager.getInstance().getContactList();
+        ArrayList<String> contactResponseList = new ArrayList<>();
+        if (contactListSet!=null) {
+            contactResponseList.addAll(contactListSet);
+        }
+
+        Set<String> evdListSet = DataManager.getInstance().getEvdList();
+        ArrayList<String> evdResponseList = new ArrayList<>();
+        if (evdListSet!=null) {
+            evdResponseList.addAll(evdListSet);
+        }
+
+        Log.d("ContactListNew:", contactResponseList.toString());
+        Log.d("ExcludedList:", excludedList.toString());
+        Log.d("IncludedList:", includedList.toString());
+
+        // check the include segments
+        //includeType.equalsIgnoreCase("any")->condition removed from here
+        if((!includedList.isEmpty()) && includedList.size() > 0){
+            processEmbedSurvey = false;
+            // now we have inclusion of the segments user only
+            if((!contactResponseList.isEmpty()) && contactResponseList.size()>0){
+                for (int i=0; i<contactResponseList.size(); i++) {
+                    String segmentInContact = contactResponseList.get(i);
+
+                    if(includedList.contains(segmentInContact)){
+                        processEmbedSurvey = true;
+                        break;
+                    }
+                }
+            }
+            //For anonymous users
+            else if((!evdResponseList.isEmpty()) && evdResponseList.size()>0){
+                for (int i=0; i<evdResponseList.size(); i++) {
+                    String segmentInContact = evdResponseList.get(i);
+
+                    if(includedList.contains(segmentInContact)){
+                        processEmbedSurvey = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // check exclude segments
+        //excludeType.equalsIgnoreCase("any")->condition removed from here
+        if((!excludedList.isEmpty()) && excludedList.size() > 0){
+            // now we have inclusion of the segments user only
+            if((!contactResponseList.isEmpty()) && contactResponseList.size()>0){
+                for (int i=0; i<contactResponseList.size(); i++) {
+                    String segmentInContact = contactResponseList.get(i);
+
+                    if(excludedList.contains(segmentInContact)){
+                        processEmbedSurvey = false;
+                        break;
+                    }
+                }
+            }
+            //For anonymous users
+            else if((!evdResponseList.isEmpty()) && evdResponseList.size()>0){
+                for (int i=0; i<evdResponseList.size(); i++) {
+                    String segmentInContact = evdResponseList.get(i);
+
+                    if(excludedList.contains(segmentInContact)){
+                        processEmbedSurvey = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return processEmbedSurvey;
+    }
 
     @Override
     public void onWidgetSuccess(Widget widget, boolean isSurveyInitialize) {
@@ -202,6 +304,8 @@ public final class ZFSurvey implements ApiResponseCallbacks {
         if (widget.getData().getDistributionInfo().getIsWidgetActive()) {
 
             if (zfSurveyDialog == null && isSurveyInitialize) {
+                boolean segmentAllowed = checkSegmenting();
+                if (segmentAllowed) {
                 zfSurveyDialog = new ZFSurveyDialog(contexts, url, () -> {
                     if (AppUtils.getInstance().isNetworkConnected(mContext)) {
                     }
@@ -210,6 +314,7 @@ public final class ZFSurvey implements ApiResponseCallbacks {
                     }
                 });
                 zfSurveyDialog.show();
+              }
             }
         } else {
             if (zfSurveyDialog != null) {
@@ -275,8 +380,18 @@ public final class ZFSurvey implements ApiResponseCallbacks {
         Log.d(Constant.TAG,DataManager.getInstance().getEmailId());
         Log.d(Constant.TAG,DataManager.getInstance().getExternalVisitorId());
         Log.d(Constant.TAG,DataManager.getInstance().getFirstSeen());
+        Log.d(Constant.TAG,DataManager.getInstance().getEmailId());
+        Log.d(Constant.TAG,DataManager.getInstance().getUniqueId());
+        Log.d(Constant.TAG,DataManager.getInstance().getMobileNo());
+        Log.d(Constant.TAG,DataManager.getInstance().getCookieId());
+        Log.d(Constant.TAG,""+DataManager.getInstance().getExcludeType());
+        Log.d(Constant.TAG,""+DataManager.getInstance().getIncludeType());
+        Log.d(Constant.TAG,""+DataManager.getInstance().getExcludedList());
+        Log.d(Constant.TAG,""+DataManager.getInstance().getIncludedList());
+        Log.d(Constant.TAG,""+DataManager.getInstance().getContactList());
+
         DataManager.getInstance().saveFirstSeen();
         DataManager.getInstance().saveCookieId();
-        initializeZFData(mContext);
+        /*initializeZFData(mContext);*/
     }
 }

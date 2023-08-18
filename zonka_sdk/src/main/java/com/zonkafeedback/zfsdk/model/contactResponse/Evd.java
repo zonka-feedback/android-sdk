@@ -82,7 +82,7 @@ public class Evd {
     private String lastReferringSite;
     @SerializedName("lists")
     @Expose
-    private List<Object> lists = null;
+    private List<String> lists = null;
     @SerializedName("isDeleted")
     @Expose
     private Boolean isDeleted;
@@ -312,11 +312,11 @@ public class Evd {
         this.lastReferringSite = lastReferringSite;
     }
 
-    public List<Object> getLists() {
+    public List<String> getLists() {
         return lists;
     }
 
-    public void setLists(List<Object> lists) {
+    public void setLists(List<String> lists) {
         this.lists = lists;
     }
 

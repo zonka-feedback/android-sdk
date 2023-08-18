@@ -26,6 +26,7 @@ public class Constant {
     public static final String DEVICE_OS_VERSION = "zf_sdk_os_version";
     public static final String APP_VERSION_NAME = "zf_sdk_version";
     public static final String DEVICE_OS = "zf_sdk_os";
+
     public static  final String SCREEN_NAME = "zf_sdk_screen";
     public static final String IS_WIDGET_ACTIVE = "setIsWidgetActive";
 
@@ -61,5 +62,11 @@ public class Constant {
     public static final String CONTACT_DEVICE_MODEL = "deviceModel";
     public static final String CONTACT_DEVICE_BRAND = "deviceBrand";
     public static final String CONTACT_DEVICE = "device";
+    public static final String CONTACT_LIST = "contact_list";
+    public static final String EXCLUDED_LIST = "excluded_list";
+    public static final String INCLUDED_LIST = "included_list";
+    public static final String EXCLUDE_TYPE = "exclude_type";
+    public static final String INCLUDE_TYPE = "include_type";
+    public static final String EVD_LIST = "evd_list";
 }
 

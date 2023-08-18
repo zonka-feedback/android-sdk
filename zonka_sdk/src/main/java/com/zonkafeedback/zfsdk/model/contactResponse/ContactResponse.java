@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class ContactResponse {
 
+    public ContactResponse() {
+    }
+
     @SerializedName("status")
     @Expose
     private Integer status;

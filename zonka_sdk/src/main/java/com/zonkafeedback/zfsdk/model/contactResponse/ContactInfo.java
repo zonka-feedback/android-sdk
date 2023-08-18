@@ -22,7 +22,7 @@ public class ContactInfo {
     private String uniqueId;
     @SerializedName("lists")
     @Expose
-    private List<Object> lists = null;
+    private List<String> lists = null;
     @SerializedName("isDeleted")
     @Expose
     private Boolean isDeleted;
@@ -224,11 +224,11 @@ public class ContactInfo {
         this.uniqueId = uniqueId;
     }
 
-    public List<Object> getLists() {
+    public List<String> getLists() {
         return lists;
     }
 
-    public void setLists(List<Object> lists) {
+    public void setLists(List<String> lists) {
         this.lists = lists;
     }
 

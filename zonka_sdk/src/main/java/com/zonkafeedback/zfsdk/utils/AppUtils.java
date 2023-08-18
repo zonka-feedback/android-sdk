@@ -1,6 +1,7 @@
 package com.zonkafeedback.zfsdk.utils;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -301,13 +302,12 @@ public class AppUtils {
 
         String screenName = "";
         try {
-            screenName = services.get(0).topActivity.toString();
-            screenName = screenName.substring(screenName.lastIndexOf('.') + 1).trim();
-            screenName = screenName.replace("}","");
+          screenName = services.get(0).topActivity.toString();
+          screenName = screenName.substring(screenName.lastIndexOf('.') + 1).trim();
+          screenName = screenName.replace("}","");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return screenName;
     }
-
 }

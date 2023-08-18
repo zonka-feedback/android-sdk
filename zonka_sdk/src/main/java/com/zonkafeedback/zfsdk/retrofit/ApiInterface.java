@@ -4,8 +4,10 @@ package com.zonkafeedback.zfsdk.retrofit;
 
 import com.zonkafeedback.zfsdk.model.contactResponse.ContactResponse;
 import com.zonkafeedback.zfsdk.model.eventModel.EventRequest;
+import com.zonkafeedback.zfsdk.model.segmentRequest.SegmentRequest;
 import com.zonkafeedback.zfsdk.model.sessionRequestModel.UpdateSessionRequest;
 import com.zonkafeedback.zfsdk.model.sessionResponseModel.SessionResponse;
+import com.zonkafeedback.zfsdk.model.trackingRequestModel.TrackingRequest;
 import com.zonkafeedback.zfsdk.model.widgetResponse.Widget;
 
 import java.util.HashMap;
@@ -44,4 +46,9 @@ public interface ApiInterface {
     Call<ResponseBody> sendEventToServer(@Body EventRequest request);
 
 
+    /*@GET("contacts/trackingRequest")
+    Call<TrackingRequest> hitTrackingRequest();
+
+    @GET("contacts/segmentRequest")
+    Call<SegmentRequest> hitSegmentRequest();*/
 }
