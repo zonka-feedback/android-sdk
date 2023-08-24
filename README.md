@@ -54,7 +54,7 @@ Add the following line to your **app module**  `build.gradle` file dependencies
 
 Create an SDK token for the required survey from Distribute menu and use that to initialize the `ZFSurvey` object in your Application Class. Also, specify the region of your Zonka Feedback account.
 
-For specifying the region use `US` for the US region and `EU` for EU region.
+For specifying the region use `US` for the US region and `EU` for EU region
 
 _**Java**_
 
