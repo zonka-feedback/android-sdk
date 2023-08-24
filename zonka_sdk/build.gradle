@@ -1,7 +1,12 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
-
+repositories {
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
 android {
     compileSdk 33
 
@@ -24,8 +29,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
@@ -48,4 +53,17 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:2.4.3"
 
 
+}
+afterEvaluate {
+    publishing {
+        publications {
+// Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.zonka-feedback'
+                artifactId = 'android-sdk'
+                version = '1.0.3'
+            }
+        }
+    }
 }
